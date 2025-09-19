@@ -8,12 +8,26 @@ import altair as alt
 st.set_page_config(page_title="Dashboard DTSEN Padang Panjang", layout="wide")
 col1, col2 = st.columns([1, 8])  # 1 bagian logo, 8 bagian judul
 
-with col1:
-    st.image("logo_padangpanjang.png", width=80)  # ganti dengan path/logo Anda
+st.markdown(
+    """
+    <div style="display: flex; align-items: center; background-color: #f8f9fa; padding: 15px; border-radius: 10px; border: 1px solid #ddd;">
+        <img src="logo_padangpanjang.png" width="80" style="margin-right: 20px;">
+        <div>
+            <h1 style="margin: 0; color: #2E86C1;">📊 Dashboard Smart City Padang Panjang</h1>
+            <h3 style="margin: 0; color: #555;">Inovasi Berbasis Data DTSEN untuk Pembangunan Kota</h3>
+        </div>
+    </div>
+    <hr style="margin-top: 10px; margin-bottom: 20px;">
+    """,
+    unsafe_allow_html=True
+)
 
-with col2:
-    st.title("Dashboard Smart City Padang Panjang")
-    st.subheader("Inovasi DTSEN untuk Prediksi & Perencanaan Pembangunan Kota")
+# with col1:
+#     st.image("logo_padangpanjang.png", width=80)  # ganti dengan path/logo Anda
+
+# with col2:
+#     st.title("Dashboard Smart City Padang Panjang")
+#     st.subheader("Inovasi DTSEN untuk Prediksi & Perencanaan Pembangunan Kota")
 
 # st.write("Use Case: Prediksi Kemiskinan, Prediksi Stunting, dan Clustering Hunian Kumuh")
 
