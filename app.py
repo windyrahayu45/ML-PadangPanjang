@@ -287,19 +287,42 @@ elif menu == "Monitoring Program Kota":
     sns.histplot(merged["delta_risk"], bins=20, kde=True, ax=ax)
     st.pyplot(fig)
 
-    # --- Top Keluarga yang Paling Membaik ---
     st.subheader("Top 20 Keluarga dengan Perbaikan Terbesar")
-    top_improve = merged.sort_values("delta_risk").head(20)
-    kolom_display = [
-        "nik_kepala_keluarga","risk_score","risk_score_after","delta_risk"
-    ]
 
-    # Tambahkan kolom opsional kalau memang ada
+    top_improve = merged.sort_values("delta_risk").head(20)
+
+    # Pilih kolom yang tersedia
+    kolom_display = ["nik_kepala_keluarga","risk_score","risk_score_after","delta_risk"]
     for c in ["nama_kepala_keluarga","kelurahan"]:
         if c in merged.columns:
             kolom_display.insert(1, c)
 
-    st.dataframe(top_improve[kolom_display])
+    # Ambil data
+    df_tampil = top_improve[kolom_display].copy()
+
+    # Tambahkan kolom status
+    def status_perubahan(x):
+        if x < 0:
+            return "Membaik"
+        elif x > 0:
+            return "Memburuk"
+        else:
+            return "Tetap"
+
+    df_tampil["Status Perubahan"] = df_tampil["delta_risk"].apply(status_perubahan)
+
+    # Ubah nama kolom supaya mudah dipahami
+    df_tampil = df_tampil.rename(columns={
+        "nik_kepala_keluarga": "NIK Kepala Keluarga",
+        "nama_kepala_keluarga": "Nama Kepala Keluarga",
+        "kelurahan": "Kelurahan",
+        "risk_score": "Skor Kemiskinan (Sebelum Program)",
+        "risk_score_after": "Skor Kemiskinan (Sesudah Program)",
+        "delta_risk": "Perubahan Skor"
+    })
+
+    st.dataframe(df_tampil)
+
 
     # --- Ringkasan per Kelurahan ---
     # --- Ringkasan per Kelurahan ---
