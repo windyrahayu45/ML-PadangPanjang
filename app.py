@@ -2,7 +2,7 @@ import streamlit as st
 import pandas as pd
 import seaborn as sns
 import matplotlib.pyplot as plt
-    
+import numpy as np   
 import altair as alt
 
 st.set_page_config(page_title="Dashboard DTSEN Padang Panjang", layout="wide")
