@@ -21,7 +21,8 @@ menu = st.sidebar.radio("Pilih Use Case", [
     "Forecast Migrasi & Pertumbuhan Penduduk Kota",
     "Segmentasi Sosial-Ekonomi",
     "Deteksi Anomali Bansos",
-    "Prediksi Layanan Publik"
+    "Prediksi Layanan Publik",
+    "Monitoring Program Kota"
 ])
 
 
@@ -259,5 +260,50 @@ elif menu == "Prediksi Layanan Publik":
     sns.lineplot(x="period", y="school_needed", data=kel_data, label="Sekolah", ax=ax2)
     ax2.set_title(f"Prediksi Layanan Publik Kelurahan {kel}")
     st.pyplot(fig2)
+
+
+elif menu == "Monitoring Program Kota":
+    st.header("📊 Monitoring Dampak Program Kota")
+
+    # Load data sebelum & sesudah
+    df_before = pd.read_csv("dtsen_with_scores.csv")
+    df_after = pd.read_csv("dtsen_update_2026.csv")
+
+    # Merge berdasarkan NIK
+    merged = df_before.merge(
+        df_after,
+        on="nik_kepala_keluarga",
+        suffixes=("_before", "_after")
+    )
+
+    # Hitung perubahan skor
+    merged["delta_risk"] = merged["risk_score_after"] - merged["risk_score_before"]
+    merged["delta_stunting"] = merged["stunting_risk_score_after"] - merged["stunting_risk_score_before"]
+
+    # --- Ringkasan Dampak ---
+    st.subheader("Rata-rata Dampak Program")
+    summary = merged[["delta_risk","delta_stunting"]].mean().reset_index()
+    summary.columns = ["Indikator", "Perubahan Rata-rata"]
+    st.dataframe(summary)
+
+    # --- Histogram Perubahan Risk Score ---
+    st.subheader("Distribusi Perubahan Risk Score (Before vs After)")
+    fig, ax = plt.subplots()
+    sns.histplot(merged["delta_risk"], bins=20, kde=True, ax=ax)
+    st.pyplot(fig)
+
+    # --- Top Keluarga yang Paling Membaik ---
+    st.subheader("Top 20 Keluarga dengan Perbaikan Terbesar")
+    top_improve = merged.sort_values("delta_risk").head(20)
+    st.dataframe(top_improve[[
+        "nik_kepala_keluarga","nama_kepala_keluarga","kelurahan",
+        "risk_score_before","risk_score_after","delta_risk"
+    ]])
+
+    # --- Ringkasan per Kelurahan ---
+    st.subheader("Dampak Program per Kelurahan")
+    kel_summary = merged.groupby("kelurahan")[["delta_risk","delta_stunting"]].mean().reset_index()
+    st.dataframe(kel_summary)
+
 
 
