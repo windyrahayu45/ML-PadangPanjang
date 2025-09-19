@@ -20,7 +20,8 @@ menu = st.sidebar.radio("Pilih Use Case", [
     "Clustering Hunian Kumuh",
     "Forecast Migrasi & Pertumbuhan Penduduk Kota",
     "Segmentasi Sosial-Ekonomi",
-    "Deteksi Anomali Bansos"
+    "Deteksi Anomali Bansos",
+    "Prediksi Layanan Publik"
 ])
 
 
@@ -206,5 +207,22 @@ elif menu == "Deteksi Anomali Bansos":
     st.dataframe(df_anom[df_anom["anomaly_label"]=="Anomali"].head(20)[
         ["nik_kepala_keluarga","nama_kepala_keluarga","pendapatan_per_bulan","penerima_bansos","anomaly_label"]
     ])
+
+elif menu == "Prediksi Layanan Publik":
+    st.header("🏥📚 Prediksi Permintaan Layanan Publik")
+
+    fcst_city = pd.read_csv("forecast_penduduk_kota_5y.csv")
+    fcst_city["puskesmas_needed"] = (fcst_city["population"] / 10000).round(0)
+    fcst_city["school_needed"] = (fcst_city["population"] * 0.25 / 2000).round(0)
+
+    st.subheader("Tabel Prediksi Layanan")
+    st.dataframe(fcst_city[["period","population","puskesmas_needed","school_needed"]])
+
+    st.subheader("Grafik Prediksi")
+    fig, ax = plt.subplots(figsize=(10,6))
+    sns.lineplot(x="period", y="puskesmas_needed", data=fcst_city, label="Puskesmas", ax=ax)
+    sns.lineplot(x="period", y="school_needed", data=fcst_city, label="Sekolah", ax=ax)
+    ax.set_title("Prediksi Kebutuhan Layanan Publik 5 Tahun")
+    st.pyplot(fig)
 
 
