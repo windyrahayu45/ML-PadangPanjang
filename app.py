@@ -6,8 +6,15 @@ import numpy as np
 import altair as alt
 
 st.set_page_config(page_title="Dashboard DTSEN Padang Panjang", layout="wide")
-st.image("logo_padangpanjang.png", width=120)
-st.title("📊 Inovasi DTSEN untuk Kota Padang Panjang Cerdas: Prediksi & Perencanaan Pembangunan Berbasis Data")
+col1, col2 = st.columns([1, 8])  # 1 bagian logo, 8 bagian judul
+
+with col1:
+    st.image("logo_padangpanjang.png", width=80)  # ganti dengan path/logo Anda
+
+with col2:
+    st.title("Dashboard Smart City Padang Panjang")
+    st.subheader("Inovasi DTSEN untuk Prediksi & Perencanaan Pembangunan Kota")
+
 # st.write("Use Case: Prediksi Kemiskinan, Prediksi Stunting, dan Clustering Hunian Kumuh")
 
 # Load dataset hasil scoring/clustering
