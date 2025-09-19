@@ -327,18 +327,20 @@ elif menu == "Monitoring Program Kota":
     # --- Ringkasan per Kelurahan ---
     # --- Ringkasan per Kelurahan ---
     # --- Ringkasan per Kelurahan ---
-    col_kel = None
-    for c in merged.columns:
-        if c.strip().lower() == "kelurahan":
-            col_kel = c
-            break
-
-    if col_kel:
+    # --- Ringkasan per Kelurahan ---
+    if "kelurahan_x" in merged.columns:
         st.subheader("Dampak Program per Kelurahan")
-        kel_summary = merged.groupby(col_kel)[["delta_risk","delta_stunting"]].mean().reset_index()
+        kel_summary = merged.groupby("kelurahan_x")[["delta_risk","delta_stunting"]].mean().reset_index()
+        kel_summary = kel_summary.rename(columns={"kelurahan_x": "Kelurahan"})
+        st.dataframe(kel_summary)
+    elif "kelurahan_y" in merged.columns:
+        st.subheader("Dampak Program per Kelurahan")
+        kel_summary = merged.groupby("kelurahan_y")[["delta_risk","delta_stunting"]].mean().reset_index()
+        kel_summary = kel_summary.rename(columns={"kelurahan_y": "Kelurahan"})
         st.dataframe(kel_summary)
     else:
-        st.warning("Kolom 'kelurahan' tidak ditemukan. Kolom yang ada: " + ", ".join(merged.columns))
+        st.warning("Kolom kelurahan tidak ditemukan di dataset hasil merge.")
+
 
 
 
