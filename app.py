@@ -9,7 +9,7 @@ st.title("📊 Dashboard Inovasi Berbasis DTSEN")
 st.write("Use Case: Prediksi Kemiskinan, Prediksi Stunting, dan Clustering Hunian Kumuh")
 
 # Load dataset hasil scoring/clustering
-df = pd.read_csv("dtsen_clean_padangpanjang.csv")
+df = pd.read_csv("dtsen_with_scores.csv")
 
 # Sidebar
 menu = st.sidebar.radio("Pilih Use Case", ["Prediksi Kemiskinan", "Prediksi Stunting", "Clustering Hunian Kumuh"])
