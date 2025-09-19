@@ -211,19 +211,39 @@ elif menu == "Deteksi Anomali Bansos":
 elif menu == "Prediksi Layanan Publik":
     st.header("🏥📚 Prediksi Permintaan Layanan Publik")
 
+    # Forecast kota
     fcst_city = pd.read_csv("forecast_penduduk_kota_5y.csv")
-    fcst_city = fcst_city.rename(columns={"yhat": "population"})
-
-    # Hitung kebutuhan
+    fcst_city = fcst_city.rename(columns={"yhat":"population"})
     fcst_city["puskesmas_needed"] = (fcst_city["population"] / 10000).round(0)
     fcst_city["school_needed"] = (fcst_city["population"] * 0.25 / 2000).round(0)
 
-    st.subheader("Tabel Prediksi Layanan")
+    st.subheader("Prediksi Agregat Kota")
     st.dataframe(fcst_city[["period","population","puskesmas_needed","school_needed"]])
 
-    st.subheader("Grafik Prediksi")
+    # Grafik Kota
     fig, ax = plt.subplots(figsize=(10,6))
     sns.lineplot(x="period", y="puskesmas_needed", data=fcst_city, label="Puskesmas", ax=ax)
     sns.lineplot(x="period", y="school_needed", data=fcst_city, label="Sekolah", ax=ax)
-    ax.set_title("Prediksi Kebutuhan Layanan Publik 5 Tahun")
+    ax.set_title("Prediksi Kebutuhan Layanan Publik (Kota)")
     st.pyplot(fig)
+
+    # Forecast per kelurahan
+    fcst_kel = pd.read_csv("forecast_penduduk_prophet_5y.csv")
+    fcst_kel = fcst_kel.rename(columns={"ds":"period","yhat":"population"})
+    fcst_kel["puskesmas_needed"] = (fcst_kel["population"] / 10000).round(0)
+    fcst_kel["school_needed"] = (fcst_kel["population"] * 0.25 / 2000).round(0)
+
+    # Dropdown kelurahan
+    st.subheader("Prediksi Per Kelurahan")
+    kel = st.selectbox("Pilih Kelurahan", sorted(fcst_kel["kelurahan"].unique().tolist()))
+
+    kel_data = fcst_kel[fcst_kel["kelurahan"]==kel]
+
+    st.dataframe(kel_data[["period","population","puskesmas_needed","school_needed"]])
+
+    fig2, ax2 = plt.subplots(figsize=(10,6))
+    sns.lineplot(x="period", y="puskesmas_needed", data=kel_data, label="Puskesmas", ax=ax2)
+    sns.lineplot(x="period", y="school_needed", data=kel_data, label="Sekolah", ax=ax2)
+    ax2.set_title(f"Prediksi Layanan Publik Kelurahan {kel}")
+    st.pyplot(fig2)
+
