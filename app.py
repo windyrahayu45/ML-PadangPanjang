@@ -57,14 +57,41 @@ if menu == "Prediksi Kemiskinan":
     **Model:** Gradient Boosting (LightGBM) → menghasilkan *risk_score* (0–1).
     """)
 
-    # st.write("Daftar keluarga dengan skor risiko kemiskinan tertinggi")
+    # Tambahkan status kategori
+    def status_risk(score):
+        if score < 0.3:
+            return "Rendah"
+        elif score < 0.6:
+            return "Sedang"
+        else:
+            return "Tinggi"
+
+    df["status_kemiskinan"] = df["risk_score"].apply(status_risk)
+
+    # Tampilkan Top 20 keluarga rentan
     top_poor = df.sort_values("risk_score", ascending=False).head(20)
-    st.dataframe(top_poor[["nik_kepala_keluarga","nama_kepala_keluarga","kelurahan","kecamatan","risk_score"]])
-    
+    st.subheader("Daftar 20 Keluarga dengan Risiko Kemiskinan Tertinggi")
+    st.dataframe(
+        top_poor[[
+            "nik_kepala_keluarga",
+            "nama_kepala_keluarga",
+            "kelurahan",
+            "kecamatan",
+            "risk_score",
+            "status_kemiskinan"
+        ]]
+    )
+
+    # Distribusi skor
     st.subheader("Distribusi Risk Score")
     fig, ax = plt.subplots()
     sns.histplot(df["risk_score"], bins=20, kde=True, ax=ax)
+    ax.set_title("Distribusi Skor Risiko Kemiskinan")
     st.pyplot(fig)
+
+    # Distribusi kategori
+    st.subheader("Distribusi Status Risiko (Kategori)")
+    st.bar_chart(df["status_kemiskinan"].value_counts())
 
 # Use Case 2: Prediksi Stunting
 elif menu == "Prediksi Stunting":
@@ -75,14 +102,42 @@ elif menu == "Prediksi Stunting":
     **Model:** Gradient Boosting (LightGBM) → menghasilkan *stunting_risk_score* (0–1).
     """)
 
-    # st.write("Daftar keluarga dengan skor risiko stunting tertinggi")
+    # Tambahkan status kategori stunting
+    def status_stunting(score):
+        if score < 0.3:
+            return "Rendah"
+        elif score < 0.6:
+            return "Sedang"
+        else:
+            return "Tinggi"
+
+    df["status_stunting"] = df["stunting_risk_score"].apply(status_stunting)
+
+    # Tampilkan Top 20 keluarga rentan stunting
     top_stunting = df.sort_values("stunting_risk_score", ascending=False).head(20)
-    st.dataframe(top_stunting[["nik_kepala_keluarga","nama_kepala_keluarga","kelurahan","kecamatan","stunting_risk_score"]])
-    
-    st.subheader("Distribusi Risk Score")
+    st.subheader("Daftar 20 Keluarga dengan Risiko Stunting Tertinggi")
+    st.dataframe(
+        top_stunting[[
+            "nik_kepala_keluarga",
+            "nama_kepala_keluarga",
+            "kelurahan",
+            "kecamatan",
+            "stunting_risk_score",
+            "status_stunting"
+        ]]
+    )
+
+    # Distribusi skor
+    st.subheader("Distribusi Risk Score Stunting")
     fig, ax = plt.subplots()
     sns.histplot(df["stunting_risk_score"], bins=20, kde=True, ax=ax)
+    ax.set_title("Distribusi Skor Risiko Stunting")
     st.pyplot(fig)
+
+    # Distribusi kategori
+    st.subheader("Distribusi Status Risiko Stunting (Kategori)")
+    st.bar_chart(df["status_stunting"].value_counts())
+
 
 # Use Case 3: Clustering Hunian Kumuh
 elif menu == "Clustering Hunian Kumuh":
