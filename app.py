@@ -261,7 +261,6 @@ elif menu == "Prediksi Layanan Publik":
     ax2.set_title(f"Prediksi Layanan Publik Kelurahan {kel}")
     st.pyplot(fig2)
 
-
 elif menu == "Monitoring Program Kota":
     st.header("📊 Monitoring Dampak Program Kota")
 
@@ -277,8 +276,8 @@ elif menu == "Monitoring Program Kota":
     )
 
     # Hitung perubahan skor
-    merged["delta_risk"] = merged["risk_score_after"] - merged["risk_score"]
-    merged["delta_stunting"] = merged["stunting_risk_score_after"] - merged["stunting_risk_score"]
+    merged["delta_risk"] = merged["risk_score_after"] - merged["risk_score_before"]
+    merged["delta_stunting"] = merged["stunting_risk_score_after"] - merged["stunting_risk_score_before"]
 
     # --- Ringkasan Dampak ---
     st.subheader("Rata-rata Dampak Program")
@@ -297,13 +296,14 @@ elif menu == "Monitoring Program Kota":
     top_improve = merged.sort_values("delta_risk").head(20)
     st.dataframe(top_improve[[
         "nik_kepala_keluarga","nama_kepala_keluarga","kelurahan",
-        "risk_score","risk_score_after","delta_risk"
+        "risk_score_before","risk_score_after","delta_risk"
     ]])
 
     # --- Ringkasan per Kelurahan ---
     st.subheader("Dampak Program per Kelurahan")
     kel_summary = merged.groupby("kelurahan")[["delta_risk","delta_stunting"]].mean().reset_index()
     st.dataframe(kel_summary)
+
 
 
 
