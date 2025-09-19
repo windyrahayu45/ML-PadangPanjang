@@ -289,11 +289,16 @@ elif menu == "Monitoring Program Kota":
 
     # --- Top Keluarga yang Paling Membaik ---
     st.subheader("Top 20 Keluarga dengan Perbaikan Terbesar")
-    top_improve = merged.sort_values("delta_risk").head(20)
-    st.dataframe(top_improve[[
-        "nik_kepala_keluarga","nama_kepala_keluarga","kelurahan",
-        "risk_score","risk_score_after","delta_risk"
-    ]])
+    kolom_display = [
+        "nik_kepala_keluarga","risk_score","risk_score_after","delta_risk"
+    ]
+
+    # Tambahkan kolom opsional kalau memang ada
+    for c in ["nama_kepala_keluarga","kelurahan"]:
+        if c in merged.columns:
+            kolom_display.insert(1, c)
+
+    st.dataframe(top_improve[kolom_display])
 
     # --- Ringkasan per Kelurahan ---
     st.subheader("Dampak Program per Kelurahan")
