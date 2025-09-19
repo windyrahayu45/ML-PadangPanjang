@@ -211,7 +211,7 @@ elif menu == "Deteksi Anomali Bansos":
 elif menu == "Prediksi Layanan Publik":
     st.header("🏥📚 Prediksi Permintaan Layanan Publik")
 
-    # Forecast kota
+    # Agregat Kota
     fcst_city = pd.read_csv("forecast_penduduk_kota_5y.csv")
     fcst_city = fcst_city.rename(columns={"yhat":"population"})
     fcst_city["puskesmas_needed"] = (fcst_city["population"] / 10000).round(0)
@@ -220,20 +220,18 @@ elif menu == "Prediksi Layanan Publik":
     st.subheader("Prediksi Agregat Kota")
     st.dataframe(fcst_city[["period","population","puskesmas_needed","school_needed"]])
 
-    # Grafik Kota
     fig, ax = plt.subplots(figsize=(10,6))
     sns.lineplot(x="period", y="puskesmas_needed", data=fcst_city, label="Puskesmas", ax=ax)
     sns.lineplot(x="period", y="school_needed", data=fcst_city, label="Sekolah", ax=ax)
     ax.set_title("Prediksi Kebutuhan Layanan Publik (Kota)")
     st.pyplot(fig)
 
-    # Forecast per kelurahan
+    # Prediksi per kelurahan
     fcst_kel = pd.read_csv("forecast_penduduk_prophet_5y.csv")
     fcst_kel = fcst_kel.rename(columns={"ds":"period","yhat":"population"})
-    fcst_kel["puskesmas_needed"] = (fcst_kel["population"] / 10000).round(0)
-    fcst_kel["school_needed"] = (fcst_kel["population"] * 0.25 / 2000).round(0)
+    fcst_kel["puskesmas_needed"] = np.ceil(fcst_kel["population"] / 10000)
+    fcst_kel["school_needed"] = np.ceil(fcst_kel["population"] * 0.25 / 1000)
 
-    # Dropdown kelurahan
     st.subheader("Prediksi Per Kelurahan")
     kel = st.selectbox("Pilih Kelurahan", sorted(fcst_kel["kelurahan"].unique().tolist()))
 
