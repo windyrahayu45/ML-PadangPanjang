@@ -142,7 +142,7 @@ elif menu == "Forecast Migrasi & Pertumbuhan Penduduk Kota":
     plot_k = pd.concat([hist_k, fcst_k], ignore_index=True)
 
     chart_k = alt.Chart(plot_k).mark_line().encode(
-        x="period:T", y="population:Q", color="type:N"
+        x="period:T", y="population:Q", color=alt.Color("type:N", scale=color_scale, title="Jenis Data")
     ).properties(title=f"Penduduk {kel}: Historis & Forecast")
     st.altair_chart(chart_k, use_container_width=True)
 
