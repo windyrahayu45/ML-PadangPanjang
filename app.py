@@ -328,16 +328,54 @@ elif menu == "Monitoring Program Kota":
     # --- Ringkasan per Kelurahan ---
     # --- Ringkasan per Kelurahan ---
     # --- Ringkasan per Kelurahan ---
+    # --- Ringkasan per Kelurahan ---
     if "kelurahan_x" in merged.columns:
         st.subheader("Dampak Program per Kelurahan")
+
+        # rata-rata perubahan
         kel_summary = merged.groupby("kelurahan_x")[["delta_risk","delta_stunting"]].mean().reset_index()
         kel_summary = kel_summary.rename(columns={"kelurahan_x": "Kelurahan"})
+
+        # tambahkan status per keluarga
+        def status_perubahan(x):
+            if x < 0:
+                return "Membaik"
+            elif x > 0:
+                return "Memburuk"
+            else:
+                return "Tetap"
+
+        merged["Status Perubahan"] = merged["delta_risk"].apply(status_perubahan)
+
+        # hitung distribusi status per kelurahan
+        kel_status = merged.groupby(["kelurahan_x","Status Perubahan"]).size().reset_index(name="Jumlah")
+        kel_status_pivot = kel_status.pivot(index="kelurahan_x", columns="Status Perubahan", values="Jumlah").fillna(0).reset_index()
+        kel_status_pivot = kel_status_pivot.rename(columns={"kelurahan_x": "Kelurahan"})
+
+        # tampilkan
+        st.write("📊 Rata-rata Perubahan Skor")
         st.dataframe(kel_summary)
+
+        st.write("📊 Distribusi Status Perubahan per Kelurahan")
+        st.dataframe(kel_status_pivot)
+
     elif "kelurahan_y" in merged.columns:
         st.subheader("Dampak Program per Kelurahan")
+
         kel_summary = merged.groupby("kelurahan_y")[["delta_risk","delta_stunting"]].mean().reset_index()
         kel_summary = kel_summary.rename(columns={"kelurahan_y": "Kelurahan"})
+
+        merged["Status Perubahan"] = merged["delta_risk"].apply(status_perubahan)
+        kel_status = merged.groupby(["kelurahan_y","Status Perubahan"]).size().reset_index(name="Jumlah")
+        kel_status_pivot = kel_status.pivot(index="kelurahan_y", columns="Status Perubahan", values="Jumlah").fillna(0).reset_index()
+        kel_status_pivot = kel_status_pivot.rename(columns={"kelurahan_y": "Kelurahan"})
+
+        st.write("📊 Rata-rata Perubahan Skor")
         st.dataframe(kel_summary)
+
+        st.write("📊 Distribusi Status Perubahan per Kelurahan")
+        st.dataframe(kel_status_pivot)
+
     else:
         st.warning("Kolom kelurahan tidak ditemukan di dataset hasil merge.")
 
