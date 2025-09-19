@@ -211,20 +211,27 @@ elif menu == "Deteksi Anomali Bansos":
 elif menu == "Prediksi Layanan Publik":
     st.header("🏥📚 Prediksi Permintaan Layanan Publik")
 
+    # --- Ambil data real dari DTSEN ---
+    df_scores = pd.read_csv("dtsen_with_scores.csv")
 
+    # Hitung proporsi anak sekolah dari data DTSEN nyata
     proporsi_anak_sekolah = (
-        df["jumlah_anak_sekolah"].sum() / 
-        df["jumlah_anggota_keluarga"].sum()
+        df_scores["jumlah_anak_sekolah"].sum() /
+        df_scores["jumlah_anggota_keluarga"].sum()
     )
-    # Agregat Kota
+    st.write(f"Proporsi anak sekolah (real dari DTSEN): {proporsi_anak_sekolah:.2%}")
+
+    # --- Prediksi Agregat Kota ---
     fcst_city = pd.read_csv("forecast_penduduk_kota_5y.csv")
     fcst_city = fcst_city.rename(columns={"yhat":"population"})
+
+    # Hitung kebutuhan berdasarkan proporsi nyata
     fcst_city["anak_sekolah_pred"] = (fcst_city["population"] * proporsi_anak_sekolah).round(0)
     fcst_city["puskesmas_needed"] = (fcst_city["population"] / 10000).round(0)
     fcst_city["school_needed"] = np.ceil(fcst_city["anak_sekolah_pred"] / 2000)
 
     st.subheader("Prediksi Agregat Kota")
-    st.dataframe(fcst_city[["period","population","puskesmas_needed","school_needed"]])
+    st.dataframe(fcst_city[["period","population","anak_sekolah_pred","puskesmas_needed","school_needed"]])
 
     fig, ax = plt.subplots(figsize=(10,6))
     sns.lineplot(x="period", y="puskesmas_needed", data=fcst_city, label="Puskesmas", ax=ax)
@@ -232,23 +239,25 @@ elif menu == "Prediksi Layanan Publik":
     ax.set_title("Prediksi Kebutuhan Layanan Publik (Kota)")
     st.pyplot(fig)
 
-    # Prediksi per kelurahan
+    # --- Prediksi Per Kelurahan ---
     fcst_kel = pd.read_csv("forecast_penduduk_prophet_5y.csv")
     fcst_kel = fcst_kel.rename(columns={"ds":"period","yhat":"population"})
+
     fcst_kel["anak_sekolah_pred"] = (fcst_kel["population"] * proporsi_anak_sekolah).round(0)
     fcst_kel["puskesmas_needed"] = np.ceil(fcst_kel["population"] / 10000)
-    fcst_kel["school_needed"] = np.ceil(fcst_kel["anak_sekolah_pred"] / 1000)
+    fcst_kel["school_needed"] = np.ceil(fcst_kel["anak_sekolah_pred"] / 1000)  # lebih kecil kapasitasnya untuk skala kelurahan
 
     st.subheader("Prediksi Per Kelurahan")
     kel = st.selectbox("Pilih Kelurahan", sorted(fcst_kel["kelurahan"].unique().tolist()))
 
     kel_data = fcst_kel[fcst_kel["kelurahan"]==kel]
 
-    st.dataframe(kel_data[["period","population","puskesmas_needed","school_needed"]])
+    st.dataframe(kel_data[["period","population","anak_sekolah_pred","puskesmas_needed","school_needed"]])
 
     fig2, ax2 = plt.subplots(figsize=(10,6))
     sns.lineplot(x="period", y="puskesmas_needed", data=kel_data, label="Puskesmas", ax=ax2)
     sns.lineplot(x="period", y="school_needed", data=kel_data, label="Sekolah", ax=ax2)
     ax2.set_title(f"Prediksi Layanan Publik Kelurahan {kel}")
     st.pyplot(fig2)
+
 
