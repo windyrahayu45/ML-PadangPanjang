@@ -14,7 +14,7 @@ st.markdown(
         <img src="logo_padangpanjang.png" width="80" style="margin-right: 20px;">
         <div>
             <h1 style="margin: 0; color: #2E86C1;">📊 Dashboard Smart City Padang Panjang</h1>
-            <h3 style="margin: 0; color: #555;">Inovasi Berbasis Data DTSEN untuk Pembangunan Kota</h3>
+            <h3 style="margin: 0; color: #555;">Inovasi DTSEN untuk Prediksi & Perencanaan Pembangunan Kota</h3>
         </div>
     </div>
     <hr style="margin-top: 10px; margin-bottom: 20px;">
