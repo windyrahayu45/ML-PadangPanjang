@@ -324,14 +324,14 @@ elif menu == "Monitoring Program Kota":
     st.dataframe(df_tampil)
 
 
-    # --- Ringkasan per Kelurahan ---
-    # --- Ringkasan per Kelurahan ---
-    if "kelurahan" in merged.columns:
-        st.subheader("Dampak Program per Kelurahan")
-        kel_summary = merged.groupby("kelurahan")[["delta_risk","delta_stunting"]].mean().reset_index()
-        st.dataframe(kel_summary)
-    else:
-        st.warning("Kolom 'kelurahan' tidak ada di dataset update. Coba buat ulang dtsen_update_2026.csv agar menyertakan kolom wilayah.")
+    # # --- Ringkasan per Kelurahan ---
+    # # --- Ringkasan per Kelurahan ---
+    # if "kelurahan" in merged.columns:
+    #     st.subheader("Dampak Program per Kelurahan")
+    #     kel_summary = merged.groupby("kelurahan")[["delta_risk","delta_stunting"]].mean().reset_index()
+    #     st.dataframe(kel_summary)
+    # else:
+    #     st.warning("Kolom 'kelurahan' tidak ada di dataset update. Coba buat ulang dtsen_update_2026.csv agar menyertakan kolom wilayah.")
 
 
 
