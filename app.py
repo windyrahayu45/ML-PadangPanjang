@@ -14,7 +14,13 @@ st.write("Use Case: Prediksi Kemiskinan, Prediksi Stunting, dan Clustering Hunia
 df = pd.read_csv("dtsen_with_scores.csv")
 
 # Sidebar
-menu = st.sidebar.radio("Pilih Use Case", ["Prediksi Kemiskinan", "Prediksi Stunting", "Clustering Hunian Kumuh"])
+menu = st.sidebar.radio("Pilih Use Case", [
+    "Prediksi Kemiskinan",
+    "Prediksi Stunting",
+    "Clustering Hunian Kumuh",
+    "Forecast Migrasi & Pertumbuhan Penduduk Kota"
+])
+
 
 # Use Case 1: Prediksi Kemiskinan
 if menu == "Prediksi Kemiskinan":
