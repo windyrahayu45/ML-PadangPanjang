@@ -277,8 +277,8 @@ elif menu == "Monitoring Program Kota":
     )
 
     # Hitung perubahan skor
-    merged["delta_risk"] = merged["risk_score_after"] - merged["risk_score_before"]
-    merged["delta_stunting"] = merged["stunting_risk_score_after"] - merged["stunting_risk_score_before"]
+    merged["delta_risk"] = merged["risk_score_after"] - merged["risk_score"]
+    merged["delta_stunting"] = merged["stunting_risk_score_after"] - merged["stunting_risk_score"]
 
     # --- Ringkasan Dampak ---
     st.subheader("Rata-rata Dampak Program")
