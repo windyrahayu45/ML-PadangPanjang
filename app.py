@@ -212,6 +212,9 @@ elif menu == "Prediksi Layanan Publik":
     st.header("🏥📚 Prediksi Permintaan Layanan Publik")
 
     fcst_city = pd.read_csv("forecast_penduduk_kota_5y.csv")
+    fcst_city = fcst_city.rename(columns={"yhat": "population"})
+
+    # Hitung kebutuhan
     fcst_city["puskesmas_needed"] = (fcst_city["population"] / 10000).round(0)
     fcst_city["school_needed"] = (fcst_city["population"] * 0.25 / 2000).round(0)
 
@@ -224,5 +227,3 @@ elif menu == "Prediksi Layanan Publik":
     sns.lineplot(x="period", y="school_needed", data=fcst_city, label="Sekolah", ax=ax)
     ax.set_title("Prediksi Kebutuhan Layanan Publik 5 Tahun")
     st.pyplot(fig)
-
-
