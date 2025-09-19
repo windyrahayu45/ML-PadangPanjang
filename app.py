@@ -105,8 +105,17 @@ elif menu == "Forecast Migrasi & Pertumbuhan Penduduk Kota":
     # Gabungkan historis + forecast
     plot_df = pd.concat([hist_city, fcst_city], ignore_index=True)
 
+    # Warna khusus
+    color_scale = alt.Scale(
+        domain=["Historical", "Forecast"],
+        range=["#2E86C1", "#E74C3C"]  # biru, merah
+    )
+
+    # Chart agregat kota
     chart = alt.Chart(plot_df).mark_line().encode(
-        x="period:T", y="population:Q", color="type:N"
+        x="period:T",
+        y="population:Q",
+        color=alt.Color("type:N", scale=color_scale, title="Jenis Data")
     ).properties(
         title="Penduduk Kota: Historis & 5 Tahun Forecast"
     )
@@ -114,7 +123,7 @@ elif menu == "Forecast Migrasi & Pertumbuhan Penduduk Kota":
 
     # Load data per kelurahan
     ts = pd.read_csv("ts_penduduk_kelurahan_2019_2025.csv")
-    fcst_all = pd.read_csv("forecast_penduduk_prophet_5y.csv")
+    fcst_all = pd.read_csv("forecast_penduduk_prophet_5y.csv")  # atau sarimax
 
     # Forecast per kelurahan
     st.subheader("Per Kelurahan")
@@ -123,11 +132,16 @@ elif menu == "Forecast Migrasi & Pertumbuhan Penduduk Kota":
     hist_k = ts[ts["kelurahan"]==kel][["date","population"]].rename(columns={"date":"period"})
     fcst_k = fcst_all[fcst_all["kelurahan"]==kel][["ds","yhat"]].rename(columns={"ds":"period","yhat":"population"})
 
-    hist_k["type"] = "Historical"; fcst_k["type"] = "Forecast"
+    hist_k["type"] = "Historical"
+    fcst_k["type"] = "Forecast"
     plot_k = pd.concat([hist_k, fcst_k], ignore_index=True)
 
     chart_k = alt.Chart(plot_k).mark_line().encode(
-        x="period:T", y="population:Q", color="type:N"
-    ).properties(title=f"Penduduk {kel}: Historis & Forecast")
+        x="period:T",
+        y="population:Q",
+        color=alt.Color("type:N", scale=color_scale, title="Jenis Data")
+    ).properties(
+        title=f"Penduduk {kel}: Historis & Forecast"
+    )
     st.altair_chart(chart_k, use_container_width=True)
 
