@@ -80,3 +80,46 @@ elif menu == "Clustering Hunian Kumuh":
     st.write("Contoh 20 data rumah")
     st.dataframe(df[["nik_kepala_keluarga","nama_kepala_keluarga","kelurahan","cluster_label"]].head(20))
 
+# Use Case 4: Clustering Hunian Kumuh
+elif menu == "Forecast Migrasi & Pertumbuhan Penduduk Kota":
+
+    st.header("📈 Forecast Migrasi & Pertumbuhan Penduduk Kota")
+
+    # Load data
+    hist_city = pd.read_csv("hist_penduduk_kota.csv")
+    fcst_city = pd.read_csv("forecast_penduduk_kota_5y.csv")
+
+    hist_city["period"] = pd.to_datetime(hist_city["period"])
+    fcst_city["period"] = pd.to_datetime(fcst_city["period"])
+
+    # Garis historis vs forecast
+    hist_city["type"] = "Historical"
+    fcst_city["type"] = "Forecast"
+    fcst_city.rename(columns={"yhat":"population"}, inplace=True)
+
+    plot_df = pd.concat([hist_city, fcst_city], ignore_index=True)
+
+    chart = alt.Chart(plot_df).mark_line().encode(
+        x="period:T",
+        y="population:Q",
+        color="type:N"
+    ).properties(
+        title="Penduduk Kota: Historis & 5 Tahun Forecast"
+    )
+
+    st.altair_chart(chart, use_container_width=True)
+
+    # Per kelurahan (opsional)
+    st.subheader("Per Kelurahan")
+    kel = st.selectbox("Pilih Kelurahan", sorted(ts["kelurahan"].unique().tolist()))
+    hist_k = ts[ts["kelurahan"]==kel][["date","population"]].rename(columns={"date":"period"})
+    fcst_k = pd.read_csv("forecast_penduduk_prophet_5y.csv")  # atau sarimax
+    fcst_k = fcst_k[fcst_k["kelurahan"]==kel][["ds","yhat"]].rename(columns={"ds":"period","yhat":"population"})
+    hist_k["type"] = "Historical"; fcst_k["type"] = "Forecast"
+    plot_k = pd.concat([hist_k, fcst_k], ignore_index=True)
+
+    chart_k = alt.Chart(plot_k).mark_line().encode(
+        x="period:T", y="population:Q", color="type:N"
+    ).properties(title=f"Penduduk {kel}: Historis & Forecast")
+    st.altair_chart(chart_k, use_container_width=True)
+
