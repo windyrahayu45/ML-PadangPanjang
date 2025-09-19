@@ -265,15 +265,11 @@ elif menu == "Monitoring Program Kota":
     st.header("📊 Monitoring Dampak Program Kota")
 
     # Load data sebelum & sesudah
-    df_before = pd.read_csv("dtsen_with_scores.csv")
-    df_after = pd.read_csv("dtsen_update_2026.csv")
+    df_before = pd.read_csv("dtsen_with_scores.csv")         # ada risk_score & stunting_risk_score
+    df_after = pd.read_csv("dtsen_update_2026.csv")          # sudah ada risk_score_after & stunting_risk_score_after
 
-    # Merge berdasarkan NIK
-    merged = df_before.merge(
-        df_after,
-        on="nik_kepala_keluarga",
-        suffixes=("_before", "_after")
-    )
+    # Merge berdasarkan NIK (tanpa suffixes)
+    merged = df_before.merge(df_after, on="nik_kepala_keluarga")
 
     # Hitung perubahan skor
     merged["delta_risk"] = merged["risk_score_after"] - merged["risk_score"]
@@ -303,6 +299,7 @@ elif menu == "Monitoring Program Kota":
     st.subheader("Dampak Program per Kelurahan")
     kel_summary = merged.groupby("kelurahan")[["delta_risk","delta_stunting"]].mean().reset_index()
     st.dataframe(kel_summary)
+
 
 
 
