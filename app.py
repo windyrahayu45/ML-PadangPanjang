@@ -2,6 +2,8 @@ import streamlit as st
 import pandas as pd
 import seaborn as sns
 import matplotlib.pyplot as plt
+    
+import altair as alt
 
 st.set_page_config(page_title="Dashboard DTSEN Padang Panjang", layout="wide")
 
@@ -40,10 +42,41 @@ elif menu == "Prediksi Stunting":
 
 # Use Case 3: Clustering Hunian Kumuh
 elif menu == "Clustering Hunian Kumuh":
-    st.header("🏚️ Clustering Hunian Kumuh")
-    st.write("Distribusi cluster rumah tangga")
-    cluster_count = df["cluster"].value_counts()
-    st.bar_chart(cluster_count)
+    # st.header("🏚️ Clustering Hunian Kumuh")
+    # st.write("Distribusi cluster rumah tangga")
+    # cluster_count = df["cluster"].value_counts()
+    # st.bar_chart(cluster_count)
 
+    # st.write("Contoh 20 data rumah")
+    # st.dataframe(df[["nik_kepala_keluarga","nama_kepala_keluarga","kelurahan","cluster"]].head(20))
+
+
+    # Mapping cluster → label
+    cluster_labels = {0: "Layak Huni", 1: "Semi Kumuh", 2: "Kumuh"}
+    df["cluster_label"] = df["cluster"].map(cluster_labels)
+
+    # Hitung jumlah per cluster
+    cluster_count = df["cluster_label"].value_counts().reset_index()
+    cluster_count.columns = ["Cluster", "Jumlah"]
+
+    # Warna sesuai kategori
+    color_scale = alt.Scale(
+        domain=["Layak Huni", "Semi Kumuh", "Kumuh"],
+        range=["#2ecc71", "#f1c40f", "#e74c3c"]  # hijau, kuning, merah
+    )
+
+    # Buat bar chart
+    chart = alt.Chart(cluster_count).mark_bar().encode(
+        x=alt.X("Cluster:N", sort=["Layak Huni","Semi Kumuh","Kumuh"]),
+        y="Jumlah:Q",
+        color=alt.Color("Cluster:N", scale=color_scale)
+    ).properties(
+        title="Distribusi Cluster Hunian"
+    )
+
+    st.altair_chart(chart, use_container_width=True)
+
+    # Contoh data rumah
     st.write("Contoh 20 data rumah")
-    st.dataframe(df[["nik_kepala_keluarga","nama_kepala_keluarga","kelurahan","cluster"]].head(20))
+    st.dataframe(df[["nik_kepala_keluarga","nama_kepala_keluarga","kelurahan","cluster_label"]].head(20))
+
