@@ -297,7 +297,7 @@ elif menu == "Monitoring Program Kota":
     top_improve = merged.sort_values("delta_risk").head(20)
     st.dataframe(top_improve[[
         "nik_kepala_keluarga","nama_kepala_keluarga","kelurahan",
-        "risk_score_before","risk_score_after","delta_risk"
+        "risk_score","risk_score_after","delta_risk"
     ]])
 
     # --- Ringkasan per Kelurahan ---
