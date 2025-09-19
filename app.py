@@ -18,7 +18,8 @@ menu = st.sidebar.radio("Pilih Use Case", [
     "Prediksi Kemiskinan",
     "Prediksi Stunting",
     "Clustering Hunian Kumuh",
-    "Forecast Migrasi & Pertumbuhan Penduduk Kota"
+    "Forecast Migrasi & Pertumbuhan Penduduk Kota",
+    "Segmentasi Sosial-Ekonomi"
 ])
 
 
@@ -145,4 +146,42 @@ elif menu == "Forecast Migrasi & Pertumbuhan Penduduk Kota":
         x="period:T", y="population:Q", color=alt.Color("type:N", scale=color_scale, title="Jenis Data")
     ).properties(title=f"Penduduk {kel}: Historis & Forecast")
     st.altair_chart(chart_k, use_container_width=True)
+
+elif menu == "Segmentasi Sosial-Ekonomi":
+    st.header("👨‍👩‍👧‍👦 Segmentasi Sosial-Ekonomi Wilayah")
+
+    # Load dataset khusus segmen
+    df_seg = pd.read_csv("dtsen_with_segments.csv")
+
+    # Hitung distribusi segmen per kelurahan
+    seg_per_kel = df_seg.groupby(["kelurahan","socio_segment_label"]).size().reset_index(name="jumlah")
+
+    st.subheader("Distribusi Segmen per Kelurahan (Tabel)")
+    st.dataframe(seg_per_kel)
+
+    # 🔹 Heatmap
+    st.subheader("Heatmap Segmen per Kelurahan")
+    seg_pivot = seg_per_kel.pivot(index="kelurahan", columns="socio_segment_label", values="jumlah").fillna(0)
+
+    fig, ax = plt.subplots(figsize=(10,6))
+    sns.heatmap(seg_pivot, annot=True, fmt=".0f", cmap="YlGnBu", ax=ax)
+    st.pyplot(fig)
+
+    # 🔹 Stacked Bar Chart
+    st.subheader("Distribusi Segmen per Kelurahan (Stacked Bar)")
+    seg_bar = seg_per_kel.pivot(index="kelurahan", columns="socio_segment_label", values="jumlah").fillna(0)
+    seg_bar = seg_bar[["Mampu","Menengah","Rentan"]]  # urutan warna tetap
+
+    fig, ax = plt.subplots(figsize=(10,6))
+    seg_bar.plot(kind="bar", stacked=True,
+                 color=["#2ecc71","#f1c40f","#e74c3c"], ax=ax)  # hijau, kuning, merah
+    plt.title("Distribusi Segmen Sosial-Ekonomi per Kelurahan")
+    plt.ylabel("Jumlah Keluarga")
+    plt.xlabel("Kelurahan")
+    st.pyplot(fig)
+
+    # 🔹 Contoh data keluarga
+    st.subheader("Contoh Data Keluarga")
+    st.dataframe(df_seg[["nik_kepala_keluarga","nama_kepala_keluarga","kelurahan","socio_segment_label"]].head(20))
+
 
