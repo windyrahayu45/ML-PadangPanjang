@@ -8,7 +8,7 @@ import altair as alt
 st.set_page_config(page_title="Dashboard DTSEN Padang Panjang", layout="wide")
 
 st.title("📊 Dashboard Inovasi Berbasis DTSEN")
-st.write("Use Case: Prediksi Kemiskinan, Prediksi Stunting, dan Clustering Hunian Kumuh")
+# st.write("Use Case: Prediksi Kemiskinan, Prediksi Stunting, dan Clustering Hunian Kumuh")
 
 # Load dataset hasil scoring/clustering
 df = pd.read_csv("dtsen_with_scores.csv")
