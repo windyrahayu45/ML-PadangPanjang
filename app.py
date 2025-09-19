@@ -105,12 +105,27 @@ elif menu == "Forecast Migrasi & Pertumbuhan Penduduk Kota":
     # Gabungkan historis + forecast
     plot_df = pd.concat([hist_city, fcst_city], ignore_index=True)
 
+    color_scale = alt.Scale(
+        domain=["Historical", "Forecast"],
+        range=["#2E86C1", "#E74C3C"]  # biru, merah
+    )
+
+    # Chart agregat kota
     chart = alt.Chart(plot_df).mark_line().encode(
-        x="period:T", y="population:Q", color="type:N"
+        x="period:T",
+        y="population:Q",
+        color=alt.Color("type:N", scale=color_scale, title="Jenis Data")
     ).properties(
         title="Penduduk Kota: Historis & 5 Tahun Forecast"
     )
     st.altair_chart(chart, use_container_width=True)
+
+    # chart = alt.Chart(plot_df).mark_line().encode(
+    #     x="period:T", y="population:Q", color="type:N"
+    # ).properties(
+    #     title="Penduduk Kota: Historis & 5 Tahun Forecast"
+    # )
+    # st.altair_chart(chart, use_container_width=True)
 
     # Load data per kelurahan
     ts = pd.read_csv("ts_penduduk_kelurahan_2019_2025.csv")
