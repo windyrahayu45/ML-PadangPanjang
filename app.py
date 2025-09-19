@@ -30,13 +30,13 @@ menu = st.sidebar.radio("Pilih Use Case", [
 # Use Case 1: Prediksi Kemiskinan
 if menu == "Prediksi Kemiskinan":
     st.header("🏠 Prediksi Kemiskinan")
-    st.info("""
+    st.write("""
     **Tujuan:** Mengetahui keluarga dengan risiko kemiskinan tertinggi agar intervensi (BLT, bansos, subsidi pangan) lebih tepat sasaran.  
     **Data DTSEN:** Pendapatan per bulan, pengeluaran, pendidikan, pekerjaan, kepemilikan rumah/aset.  
     **Model:** Gradient Boosting (LightGBM) → menghasilkan *risk_score* (0–1).
     """)
 
-    st.write("Daftar keluarga dengan skor risiko kemiskinan tertinggi")
+    # st.write("Daftar keluarga dengan skor risiko kemiskinan tertinggi")
     top_poor = df.sort_values("risk_score", ascending=False).head(20)
     st.dataframe(top_poor[["nik_kepala_keluarga","nama_kepala_keluarga","kelurahan","kecamatan","risk_score"]])
     
@@ -48,13 +48,13 @@ if menu == "Prediksi Kemiskinan":
 # Use Case 2: Prediksi Stunting
 elif menu == "Prediksi Stunting":
     st.header("🧒 Prediksi Stunting")
-    st.info("""
+    st.write("""
     **Tujuan:** Mendeteksi anak/keluarga berisiko stunting untuk prioritas PMT, edukasi gizi, dan akses kesehatan.  
     **Data DTSEN:** Jumlah anak balita, pendidikan ibu, akses sanitasi, akses puskesmas.  
     **Model:** Gradient Boosting (LightGBM) → menghasilkan *stunting_risk_score* (0–1).
     """)
 
-    st.write("Daftar keluarga dengan skor risiko stunting tertinggi")
+    # st.write("Daftar keluarga dengan skor risiko stunting tertinggi")
     top_stunting = df.sort_values("stunting_risk_score", ascending=False).head(20)
     st.dataframe(top_stunting[["nik_kepala_keluarga","nama_kepala_keluarga","kelurahan","kecamatan","stunting_risk_score"]])
     
@@ -66,13 +66,13 @@ elif menu == "Prediksi Stunting":
 # Use Case 3: Clustering Hunian Kumuh
 elif menu == "Clustering Hunian Kumuh":
     st.header("🏚️ Clustering Hunian Kumuh")
-    st.info("""
+    st.write("""
     **Tujuan:** Memetakan kondisi rumah tangga (Layak Huni, Semi Kumuh, Kumuh) sebagai dasar program bedah rumah & infrastruktur.  
     **Data DTSEN:** Jenis lantai, dinding, atap, fasilitas MCK, kepadatan rumah.  
     **Model:** K-Means Clustering → label: Layak Huni (0), Semi Kumuh (1), Kumuh (2).
     """)
 
-    st.write("Distribusi cluster rumah tangga")
+    # st.write("Distribusi cluster rumah tangga")
     # cluster_count = df["cluster"].value_counts()
     # st.bar_chart(cluster_count)
 
@@ -112,7 +112,7 @@ elif menu == "Clustering Hunian Kumuh":
 # Use Case 4: Clustering Hunian Kumuh
 elif menu == "Forecast Migrasi & Pertumbuhan Penduduk Kota":
     st.header("📈 Forecast Migrasi & Pertumbuhan Penduduk Kota")
-    st.info("""
+    st.write("""
     **Tujuan:** Proyeksi jumlah penduduk 5 tahun ke depan untuk perencanaan sekolah, perumahan, dan transportasi.  
     **Data DTSEN:** Data migrasi penduduk, usia produktif, tren kelahiran.  
     **Model:** Time Series Forecasting dengan Prophet.
@@ -176,7 +176,7 @@ elif menu == "Forecast Migrasi & Pertumbuhan Penduduk Kota":
 
 elif menu == "Segmentasi Sosial-Ekonomi":
     st.header("👨‍👩‍👧‍👦 Segmentasi Sosial-Ekonomi Wilayah")
-    st.info("""
+    st.write("""
     **Tujuan:** Mengelompokkan keluarga menjadi segmen Mampu, Menengah, dan Rentan agar kebijakan lebih tepat.  
     **Data DTSEN:** Pendapatan, pengeluaran, aset (lahan, kendaraan, tabungan), pendidikan, pekerjaan.  
     **Model:** K-Means Clustering → label: Mampu, Menengah, Rentan.
@@ -219,7 +219,7 @@ elif menu == "Segmentasi Sosial-Ekonomi":
 
 elif menu == "Deteksi Anomali Bansos":
     st.header("🚨 Deteksi Anomali Data Penduduk (Fraud Bansos)")
-    st.info("""
+    st.write("""
     **Tujuan:** Mengidentifikasi keluarga penerima bansos yang mencurigakan (fraud/duplikasi).  
     **Data DTSEN:** NIK, pendapatan, status penerima bansos.  
     **Model:** Isolation Forest → label: Normal / Anomali.
@@ -245,7 +245,7 @@ elif menu == "Deteksi Anomali Bansos":
 
 elif menu == "Prediksi Layanan Publik":
     st.header("🏥📚 Prediksi Permintaan Layanan Publik")
-    st.info("""
+    st.write("""
     **Tujuan:** Mengetahui kebutuhan Puskesmas & Sekolah berdasarkan proyeksi jumlah penduduk & proporsi anak sekolah.  
     **Data DTSEN:** Jumlah penduduk, jumlah anak sekolah, jumlah keluarga.  
     **Model:** Time Series Forecast (Prophet) + Rasio kebutuhan layanan.
@@ -302,7 +302,7 @@ elif menu == "Prediksi Layanan Publik":
 
 elif menu == "Monitoring Program Kota":
     st.header("📊 Monitoring Dampak Program Kota")
-    st.info("""
+    st.write("""
     **Tujuan:** Mengevaluasi dampak program pemerintah (bedah rumah, UMKM, bansos) terhadap skor kemiskinan & stunting.  
     **Data DTSEN:** Data keluarga sebelum & sesudah program (2025 vs 2026).  
     **Model:** Perbandingan skor risiko (before vs after) + analisis perubahan skor.
@@ -426,7 +426,7 @@ elif menu == "Monitoring Program Kota":
 
 elif menu == "Early Warning Krisis Ekonomi":
     st.header("🚨 Early Warning Krisis Ekonomi Lokal")
-    st.info("""
+    st.write("""
     **Tujuan:** Sistem peringatan dini bila pendapatan masyarakat turun drastis atau penerima bansos meningkat tajam.  
     **Data DTSEN:** Pendapatan per bulan, status pekerjaan, penerima bansos.  
     **Model:** Change-point detection sederhana + analisis tren 3 bulan terakhir.
