@@ -501,4 +501,14 @@ elif menu == "Early Warning Krisis Ekonomi":
 
         st.line_chart(bansos_trend.set_index(tanggal_col))
 
+st.markdown(
+    """
+    <hr>
+    <div style="text-align: center; font-size: 14px; color: gray;">
+        © 2025 Windi Sri Rahayu- All Rights Reserved
+    </div>
+    """,
+    unsafe_allow_html=True
+)
+
 
