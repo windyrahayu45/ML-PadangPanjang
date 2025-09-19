@@ -383,20 +383,52 @@ elif menu == "Monitoring Program Kota":
 elif menu == "Early Warning Krisis Ekonomi":
     st.header("🚨 Early Warning Krisis Ekonomi Lokal")
 
-    # Tampilkan tren pendapatan
-    monthly_income = df.groupby(df["tanggal_update"].dt.to_period("M"))["pendapatan_per_bulan"].mean().reset_index()
-    monthly_income["tanggal_update"] = monthly_income["tanggal_update"].dt.to_timestamp()
+    # --- Cari kolom tanggal ---
+    tanggal_col = None
+    for c in df.columns:
+        if "tanggal_update" in c.lower():
+            tanggal_col = c
+            break
 
-    st.line_chart(monthly_income.set_index("tanggal_update"))
-
-    # Alert sederhana
-    last = monthly_income["pendapatan_per_bulan"].iloc[-1]
-    prev = monthly_income["pendapatan_per_bulan"].iloc[-3]  # 3 bulan lalu
-    if last < 0.8 * prev:
-        st.error("⚠️ Pendapatan rata-rata turun lebih dari 20% dalam 3 bulan terakhir → Potensi krisis ekonomi!")
+    if tanggal_col is None:
+        st.error("❌ Tidak ada kolom 'tanggal_update' di dataset. Pastikan file CSV punya tanggal update.")
     else:
-        st.success("✅ Tidak ada indikasi krisis besar dalam 3 bulan terakhir.")
+        # Pastikan datetime
+        df[tanggal_col] = pd.to_datetime(df[tanggal_col], errors="coerce")
 
+        # --- Agregasi pendapatan bulanan ---
+        monthly_income = (
+            df.groupby(df[tanggal_col].dt.to_period("M"))["pendapatan_per_bulan"]
+            .mean()
+            .reset_index()
+        )
+        monthly_income[tanggal_col] = monthly_income[tanggal_col].dt.to_timestamp()
 
+        # --- Tampilkan grafik tren ---
+        st.subheader("Tren Rata-rata Pendapatan Bulanan")
+        st.line_chart(monthly_income.set_index(tanggal_col))
+
+        # --- Early Warning sederhana ---
+        if len(monthly_income) >= 3:
+            last = monthly_income["pendapatan_per_bulan"].iloc[-1]
+            prev = monthly_income["pendapatan_per_bulan"].iloc[-3]  # 3 bulan lalu
+
+            if last < 0.8 * prev:
+                st.error("⚠️ Pendapatan rata-rata turun >20% dalam 3 bulan terakhir → Potensi Krisis Ekonomi!")
+            else:
+                st.success("✅ Tidak ada indikasi krisis besar dalam 3 bulan terakhir.")
+        else:
+            st.info("ℹ️ Data belum cukup panjang untuk analisis tren (butuh minimal 3 bulan).")
+
+        # --- Distribusi penerima bansos (indikator tambahan) ---
+        st.subheader("Distribusi Penerima Bansos per Bulan")
+        bansos_trend = (
+            df.groupby(df[tanggal_col].dt.to_period("M"))["penerima_bansos"]
+            .apply(lambda x: (x == "Ya").sum())
+            .reset_index(name="jumlah_penerima")
+        )
+        bansos_trend[tanggal_col] = bansos_trend[tanggal_col].dt.to_timestamp()
+
+        st.line_chart(bansos_trend.set_index(tanggal_col))
 
 
