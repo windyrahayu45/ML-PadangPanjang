@@ -98,34 +98,36 @@ elif menu == "Forecast Migrasi & Pertumbuhan Penduduk Kota":
     fcst_city["period"] = pd.to_datetime(fcst_city["period"])
 
     # Label tipe data
-    # Gabungan data historis dan forecast
-    hist_city = pd.read_csv("hist_penduduk_kota.csv")
-    fcst_city = pd.read_csv("forecast_penduduk_kota_5y.csv")
-
-    hist_city["period"] = pd.to_datetime(hist_city["period"])
-    fcst_city["period"] = pd.to_datetime(fcst_city["period"])
-
     hist_city["type"] = "Historical"
     fcst_city["type"] = "Forecast"
     fcst_city.rename(columns={"yhat":"population"}, inplace=True)
 
+    # Gabungkan historis + forecast
     plot_df = pd.concat([hist_city, fcst_city], ignore_index=True)
 
-    # Buat base line chart
-    line = alt.Chart(plot_df).mark_line().encode(
-        x="period:T",
-        y="population:Q",
-        color="type:N"
-    )
-
-    # Tambahkan shading abu-abu untuk area forecast
-    shade = alt.Chart(fcst_city).mark_area(opacity=0.2, color="lightgray").encode(
-        x="period:T",
-        y="population:Q"
-    )
-
-    chart = (shade + line).properties(
+    chart = alt.Chart(plot_df).mark_line().encode(
+        x="period:T", y="population:Q", color="type:N"
+    ).properties(
         title="Penduduk Kota: Historis & 5 Tahun Forecast"
     )
-
     st.altair_chart(chart, use_container_width=True)
+
+    # Load data per kelurahan
+    ts = pd.read_csv("ts_penduduk_kelurahan_2019_2025.csv")
+    fcst_all = pd.read_csv("forecast_penduduk_prophet_5y.csv")
+
+    # Forecast per kelurahan
+    st.subheader("Per Kelurahan")
+    kel = st.selectbox("Pilih Kelurahan", sorted(ts["kelurahan"].unique().tolist()))
+
+    hist_k = ts[ts["kelurahan"]==kel][["date","population"]].rename(columns={"date":"period"})
+    fcst_k = fcst_all[fcst_all["kelurahan"]==kel][["ds","yhat"]].rename(columns={"ds":"period","yhat":"population"})
+
+    hist_k["type"] = "Historical"; fcst_k["type"] = "Forecast"
+    plot_k = pd.concat([hist_k, fcst_k], ignore_index=True)
+
+    chart_k = alt.Chart(plot_k).mark_line().encode(
+        x="period:T", y="population:Q", color="type:N"
+    ).properties(title=f"Penduduk {kel}: Historis & Forecast")
+    st.altair_chart(chart_k, use_container_width=True)
+
