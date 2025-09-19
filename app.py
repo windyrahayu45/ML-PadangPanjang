@@ -19,7 +19,8 @@ menu = st.sidebar.radio("Pilih Use Case", [
     "Prediksi Stunting",
     "Clustering Hunian Kumuh",
     "Forecast Migrasi & Pertumbuhan Penduduk Kota",
-    "Segmentasi Sosial-Ekonomi"
+    "Segmentasi Sosial-Ekonomi",
+    "Deteksi Anomali Bansos"
 ])
 
 
@@ -183,5 +184,27 @@ elif menu == "Segmentasi Sosial-Ekonomi":
     # 🔹 Contoh data keluarga
     st.subheader("Contoh Data Keluarga")
     st.dataframe(df_seg[["nik_kepala_keluarga","nama_kepala_keluarga","kelurahan","socio_segment_label"]].head(20))
+
+
+elif menu == "Deteksi Anomali Bansos":
+    st.header("🚨 Deteksi Anomali Data Penduduk (Fraud Bansos)")
+
+    # Load dataset dengan anomali
+    df_anom = pd.read_csv("dtsen_with_anomalies.csv")
+
+    # Ringkasan jumlah anomali
+    st.subheader("Ringkasan")
+    st.write(df_anom["anomaly_label"].value_counts())
+
+    # Visualisasi
+    fig, ax = plt.subplots()
+    sns.countplot(x="anomaly_label", data=df_anom, palette=["#2ecc71","#e74c3c"], ax=ax)
+    st.pyplot(fig)
+
+    # Tampilkan contoh data mencurigakan
+    st.subheader("Data Anomali (contoh)")
+    st.dataframe(df_anom[df_anom["anomaly_label"]=="Anomali"].head(20)[
+        ["nik_kepala_keluarga","nama_kepala_keluarga","pendapatan_per_bulan","penerima_bansos","anomaly_label"]
+    ])
 
 
