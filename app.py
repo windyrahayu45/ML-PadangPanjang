@@ -289,6 +289,7 @@ elif menu == "Monitoring Program Kota":
 
     # --- Top Keluarga yang Paling Membaik ---
     st.subheader("Top 20 Keluarga dengan Perbaikan Terbesar")
+    top_improve = merged.sort_values("delta_risk").head(20)
     kolom_display = [
         "nik_kepala_keluarga","risk_score","risk_score_after","delta_risk"
     ]
