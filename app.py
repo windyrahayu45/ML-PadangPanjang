@@ -22,7 +22,8 @@ menu = st.sidebar.radio("Pilih Use Case", [
     "Segmentasi Sosial-Ekonomi",
     "Deteksi Anomali Bansos",
     "Prediksi Layanan Publik",
-    "Monitoring Program Kota"
+    "Monitoring Program Kota",
+    "Early Warning Krisis Ekonomi"
 ])
 
 
@@ -379,7 +380,22 @@ elif menu == "Monitoring Program Kota":
     else:
         st.warning("Kolom kelurahan tidak ditemukan di dataset hasil merge.")
 
+elif menu == "Early Warning Krisis Ekonomi":
+    st.header("🚨 Early Warning Krisis Ekonomi Lokal")
 
+    # Tampilkan tren pendapatan
+    monthly_income = df.groupby(df["tanggal_update"].dt.to_period("M"))["pendapatan_per_bulan"].mean().reset_index()
+    monthly_income["tanggal_update"] = monthly_income["tanggal_update"].dt.to_timestamp()
+
+    st.line_chart(monthly_income.set_index("tanggal_update"))
+
+    # Alert sederhana
+    last = monthly_income["pendapatan_per_bulan"].iloc[-1]
+    prev = monthly_income["pendapatan_per_bulan"].iloc[-3]  # 3 bulan lalu
+    if last < 0.8 * prev:
+        st.error("⚠️ Pendapatan rata-rata turun lebih dari 20% dalam 3 bulan terakhir → Potensi krisis ekonomi!")
+    else:
+        st.success("✅ Tidak ada indikasi krisis besar dalam 3 bulan terakhir.")
 
 
 
